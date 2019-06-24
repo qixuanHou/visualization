@@ -2,6 +2,7 @@
 visualization class 
 
 https://poloclub.github.io/cse6242-2019spring-online/
+
 hw1 - collect data, sqlite, d3 intro, OpenRefine
 https://docs.google.com/document/d/e/2PACX-1vSJ6OBUdqoOBlRDOn02C6O2uZ-0jJf2OW-PdVuddJ0_joKtD6ZzoHVzk1B5ZloYBMtbWnZ-g7_rYaEb/pub
 
