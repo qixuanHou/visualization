@@ -1,0 +1,6 @@
+average node degree - 1.680
+suggests every node has 1.68 nodes attaching to itself on average 
+Diameter of the graph – 11
+Suggests the longest shortest path in the graph is 11 steps (shortest path refers to the shortest path between any pairs of the network)
+Average path length - 3.026
+Suggests the average number of steps along the shortest paths for all possible pairs of network nodes is 3.026

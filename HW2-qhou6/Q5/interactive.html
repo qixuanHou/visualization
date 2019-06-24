@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+body {
+  margin: 15px;
+  background-color: #F1F3F3    
+}
+.bar {
+	fill: #D3D3D3;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #D4D8DA;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+.x path {
+	display: none;
+}
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+</style>
+<div width="960" height="500">
+	<svg class="barChart" width="60%" height="500"></svg>
+	<svg class="linechart" width="30%" height="500"></svg>
+</div>
+
+<script src="../lib/d3.v5.min.js"></script>
+<script>
+var svgL = d3.select(".linechart"),
+	widthL = 270,
+	heightL = 180;
+
+
+var svg = d3.select(".barChart"),
+    margin = {top: 20, right: 20, bottom: 30, left: 80},
+    width = 600 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+  
+var x = d3.scaleLinear().range([0, width]);
+var y = d3.scaleBand().range([height, 0]);
+
+var g = svg.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  
+var datax =[
+			{country: 'Bangladesh', population_2012: 105905297, growth: {year_2013:42488 , year_2014:934 , year_2015:52633 , year_2016:112822 , year_2017:160792}},
+			{country: 'Ethopia', population_2012: 75656319, growth: {year_2013:1606010 , year_2014:1606705 , year_2015:1600666 , year_2016:1590077 , year_2017:1580805}},
+			{country: 'Kenya', population_2012: 33007327, growth: {year_2013:705153 , year_2014:703994 , year_2015:699906 , year_2016:694295 , year_2017:687910}},
+			{country: 'Afghanistan', population_2012: 23280573, growth: {year_2013:717151 , year_2014:706082 , year_2015:665025 , year_2016:616262 , year_2017:573643}},
+			{country: 'Morocco', population_2012: 13619520, growth: {year_2013:11862 , year_2014:7997 , year_2015:391 , year_2016:-8820 , year_2017:-17029}}]; 
+var data = [];
+
+for (i = 0; i < datax.length; i++) {
+	data.push({
+		"country": datax[i].country,
+		"population_2012": datax[i].population_2012 + datax[i].growth.year_2013 + datax[i].growth.year_2014 + datax[i].growth.year_2015 + datax[i].growth.year_2016 + datax[i].growth.year_2017,
+		"2012": datax[i].population_2012,
+		"growth": datax[i].growth
+	});
+}
+
+
+data.sort(function(a, b) { return a.population_2012 - b.population_2012; });
+
+x.domain([0, d3.max(data, function(d) { return d.population_2012; })]);
+y.domain(data.map(function(d) { return d.country; })).padding(0.1);
+
+g.append("g")
+    .attr("class", "x axis")
+   	.attr("transform", "translate(0," + height + ")")
+  	.call(d3.axisBottom(x).ticks(5).tickFormat(function(d) { return parseInt(d / 1000); }).tickSizeInner([-height]));
+
+g.append("g")
+    .attr("class", "y axis")
+    .call(d3.axisLeft(y));
+
+
+g.selectAll(".bar")
+    .data(data)
+  .enter().append("rect")
+    .attr("class", "bar")
+    .attr("x", 0)
+    .attr("height", y.bandwidth())
+    .attr("y", function(d) { return y(d.country); })
+    .attr("width", function(d) { return x(d.population_2012); })
+    .on("mousemove", function(d){
+    	d3.select(this)
+            .style("fill", "blue");
+        var rate = calculateRate(d);
+        plotLineChart(rate);
+        // tooltip
+        //   .style("left", d3.event.pageX - 50 + "px")
+        //   .style("top", d3.event.pageY - 70 + "px")
+        //   .style("display", "inline-block")
+        //   .html((d.country) + "<br>" + "£" + (d.population_2012));
+    })
+	.on("mouseout", function(d){ 
+		d3.select(this)
+            .style("fill", "#D3D3D3");
+        d3.selectAll(".xAxis").remove();
+        d3.selectAll(".yAxis").remove();
+        d3.selectAll(".line").remove();
+
+	});
+g.selectAll(".barLabel")	
+   .data(data)
+   .enter()
+   .append("text")
+   .text(function (d) {return d.population_2012.toLocaleString(); })
+   .attr("x", 20)
+   .attr("y", function(d) { return y(d.country) + 40; });
+
+
+function calculateRate(countryData) {
+	return [
+		{
+			"year": 2013,
+			"rate": 100 * countryData.growth.year_2013 / countryData.population_2012
+		},
+		{
+			"year": 2014,
+			"rate": 100 * countryData.growth.year_2014 / (countryData.population_2012 + countryData.growth.year_2013)
+		},
+		{
+			"year": 2015,
+			"rate": 100 * countryData.growth.year_2015 / (countryData.population_2012 + countryData.growth.year_2014)
+		},
+		{
+			"year": 2016,
+			"rate": 100 * countryData.growth.year_2016 / (countryData.population_2012 + countryData.growth.year_2015)
+		},
+		{
+			"year": 2017,
+			"rate": 100 * countryData.growth.year_2017 / (countryData.population_2012 + countryData.growth.year_2016)
+		},
+	];
+}
+
+function plotLineChart(data) {
+	var yScale = d3.scaleLinear()
+					.domain([d3.min(data, function(d) { return d.rate - 0.01; }), d3.max(data, function(d) { return d.rate + 0.02; })])
+					.range([heightL, 0]);
+	var xScale = d3.scaleLinear()
+					.domain([2013, 2017])
+					.range([0, widthL]);
+
+
+	var line = d3.line()
+			   .x(function(d, i) { return xScale(d.year)})
+			   .y(function(d) { return yScale(d.rate)});
+
+    svgL.append("g")
+    		.attr("class", "xAxis")
+    		.attr("transform", "translate(40," + (heightL + 10) + ")")
+    		.call(d3.axisBottom(xScale).ticks(4).tickFormat(d3.format("d"))); 
+
+
+    svgL.append("g")
+    		.attr("transform", "translate(40,10)")
+    		.attr("class", "yAxis")
+    		.call(d3.axisLeft(yScale));
+
+   	svgL.append("path")
+   		.datum(data)
+    	.attr("class", "line") 
+    	.attr("transform", "translate(40, 10)")
+    	.attr("d", line);
+    svgL.append("text")
+    .attr("class", "yAxis")
+    	.text("pct%")
+    	.style("font-size", "14px")
+    	.attr("transform", "translate(45,10)");
+    svgL.append("text")
+    .attr("class", "yAxis")
+    	.text("year")
+    	.style("font-size", "14px")
+    	.attr("transform", "translate(" + (widthL + 60) + ","+ (heightL + 20) + ")")
+}
+
+</script>

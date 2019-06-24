@@ -1,0 +1,18 @@
+data = LOAD 's3://cse6242-2019spring-trigrams-big/*' USING PigStorage('\t') AS (ngram:chararray, year:int, match_count:float, volume_count:float);
+
+matchCounts = FILTER data BY match_count > 399;
+
+volumneCounts = FILTER matchCounts BY volume_count > 14;
+
+ngramsgroup = GROUP volumneCounts BY ngram;
+
+totalngrams = FOREACH ngramsgroup GENERATE group, SUM(volumneCounts.match_count) as (matches_ngram: float), SUM(volumneCounts.volume_count) as (volumns_ngram: float);
+
+
+avgngrams = FOREACH totalngrams GENERATE group, (float)(matches_ngram/volumns_ngram) AS occavg;
+
+ordered = ORDER avgngrams BY occavg DESC, group ASC;
+
+top20 = limit ordered 20;
+
+STORE top20 INTO ' s3://cse6242oan-2019spring-qhou6/output-big/' using PigStorage('\t');

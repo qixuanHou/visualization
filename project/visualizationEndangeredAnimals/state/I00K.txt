@@ -1,0 +1,52 @@
+state,value
+Mississippi,1
+Oklahoma,0
+Wyoming,0
+Minnesota,0
+Illinois,0
+Georgia,0
+Arkansas,0
+New Mexico,0
+Ohio,1
+Indiana,1
+Maryland,0
+Louisiana,0
+Idaho,0
+Arizona,0
+Iowa,0
+Michigan,1
+Kansas,0
+Utah,0
+Virginia,1
+Oregon,0
+Connecticut,0
+Montana,0
+California,0
+Massachusetts,0
+West Virginia,0
+South Carolina,0
+New Hampshire,0
+Vermont,0
+Delaware,0
+North Dakota,0
+Pennsylvania,0
+Florida,0
+Alaska,0
+Kentucky,0
+Hawaii,0
+Nebraska,0
+Missouri,0
+Wisconsin,0
+Alabama,1
+New York,0
+South Dakota,0
+Colorado,0
+New Jersey,0
+Washington,0
+North Carolina,0
+Tennessee,0
+District of Columbia,0
+Texas,0
+Nevada,0
+Maine,0
+Rhode Island,0

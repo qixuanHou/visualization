@@ -1,0 +1,2 @@
+Wins+Nominations and Rating is a better combination since there are less data overlapped based on the visualizations. 
+I would like to use square root scale or log scale when the relationships between two variables plotted in x and y axis are better described when square root or log scale applied.

@@ -1,0 +1,1 @@
+I started with running “noverlap” function in layout and run “force atlas” to let the network form clusters. I color-coded the nodes based on the degree. If the nodes have more adjacent nodes, then the nodes get darker green. The size of the nodes is based on the page rank. 

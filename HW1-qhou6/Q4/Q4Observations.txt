@@ -1,0 +1,6 @@
+47
+5
+566
+if(isNotNull(value), value, "Unbranded")
+if (value > 100, 1, 0)
+if (or(contains(value, "discount"), contains(value, "sale"), contains(value, "offer")), 1, 0)

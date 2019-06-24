@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../lib/d3.v5.min.js"></script>
+<body align="center">
+	<h3 align="center">Visualizing Crimes in New York City</h3>
+	<div id="select" align="center"></div>
+<script>
+var body = d3.select('body');
+var w = 800,
+	h = 600,
+	margin = 80,
+	gridSize = 80,
+	colors = ["#ffffcc", "#ffeda0", "#fed976", "#feb24c", "#fd8d3c", "#fc4e2a", "#e31a1c", "#bd0026", "#800026"],
+	borough_vertical = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"],
+	crimeType_horizontal = ["Assault", "Burglary", "Housing", "Murder", "Robbery", "Shooting"],
+	year = ["2011", "2012", "2013", "2014", "2015"];
+	
+
+var svg = body.append("svg")
+			  .attr("width", w + margin * 2)
+			  .attr("height", h + margin * 2)
+			  .attr("transform", "translate(" + margin + ",0)");
+
+var select = d3.select('#select').append('select')
+			   .attr('class','select')
+			   .attr("transform", "translate(" + w/2 + "," + margin + ")")
+			   .on('change', onchange);
+
+select.selectAll('option')
+	  .data(year)
+	  .enter()
+	  .append('option')
+	  .text(function (d) { return d; });
+
+svg.selectAll(".borough_vertical_label")	
+   .data(borough_vertical)
+   .enter()
+   .append("text")
+   .text(function (d) {return d; })
+   .attr("x", 0)
+   .attr("y", function (d, i) { return (i + 1) * gridSize; })
+   .style("text-anchor", "end")
+   .attr("transform", "translate(100," + gridSize / 2 + ")");
+
+svg.append("text")
+    .attr('class','label')
+    .attr("transform", "translate(100, 50)")
+    .style("text-anchor", "end")
+    .text('Borough');
+
+svg.selectAll(".crimeType_horizontal_label")	
+   .data(crimeType_horizontal)
+   .enter()
+   .append("text")
+   .text(function (d) {return d; })
+   .attr("x", function(d, i) { return i * gridSize; })
+   .attr("y", 6 * gridSize)
+   .style('text-anchor', 'beginning')
+   .attr("transform", "translate(120,20)");
+
+svg.append("text")
+    .attr('class','label')
+    .attr("transform", "translate(" + (120 + 7 * gridSize) + "," + (6 * gridSize) + ")")
+    .style("text-anchor", "end")
+    .text('Crime Type');
+
+function onchange(selectSeason) {
+	d3.selectAll("rect").remove();
+	d3.selectAll(".legendLabel").remove();
+	
+	var yearSelected = d3.select('select').property('value');
+	var cleanedData = [];
+	
+	for (i = 0; i < crimeType_horizontal.length; i++) {
+		for (j = 0; j < borough_vertical.length; j++) {
+			cleanedData.push({
+				crime: crimeType_horizontal[i],
+				borough: borough_vertical[j],
+				count: 0
+			});
+		}
+	}
+	var symbol = d3.symbol().size(gridSize * 100);
+	d3.csv('heatmap.csv').then(function(data) {
+		for (index = 0; index < data.length; index++) {
+		    if (data[index].Year == yearSelected) {
+		    	for (i = 0; i < cleanedData.length; i++) {
+		    		for (j = 0; j < borough_vertical.length; j ++) {
+		    			if (cleanedData[i].crime == data[index]["Crime Type"] && cleanedData[i].borough == borough_vertical[j]) {
+		    				cleanedData[i].count = cleanedData[i].count + parseInt(data[index][borough_vertical[j]]);
+		    			}
+		    		}
+		    	}
+		    }
+		}
+
+		var colorDomain = d3.extent(cleanedData, function(d){return d.count;});
+		var colorScale = d3.scaleQuantile().domain(colorDomain).range(colors);
+
+		svg.selectAll("rect")
+        	.data(cleanedData)
+        	.enter()
+        	.append("rect")
+        	.transition()
+      		.duration(0)
+      		.attr("x", function(d){return crimeType_horizontal.indexOf(d.crime) * gridSize;})
+      		.attr("y", function(d){return borough_vertical.indexOf(d.borough) * gridSize;})
+	      	.attr("width", gridSize)
+	      	.attr("height", gridSize)
+	      	.style("stroke", "white")
+	      	.style("fill", function(d){return colorScale(d.count);})
+	      	.attr("transform", "translate(100, 70)");
+
+	    var legendMarker = [0].concat(colorScale.quantiles());
+		var legend = svg.selectAll("legend")
+		  				.data(legendMarker);
+
+		legend.enter()
+		 		.append("rect")
+		        .attr("x", function(d, i) { return gridSize * i; })
+		        .attr("y", 550)
+		        .attr("width", gridSize)
+		        .attr("height", gridSize/2)
+		        .style("fill", function(d, i) { return colors[i]; });
+
+		svg.selectAll(".legendText")
+		  	.data(legendMarker)
+		  	.enter()
+		  	.append("text")
+		  	.attr('class','legendLabel')
+		    .text(function(d) { return Math.round(d); })
+	        .attr("x", function(d, i) { return gridSize * i; })
+	        .attr("y", 610);
+
+	    svg.append("text")
+		    .attr('class','label')
+		    .attr("transform", "translate(100, 540)")
+		    .style("text-anchor", "end")
+		    .text('No. of Crimes');
+	});
+
+
+
+};
+onchange(2011);
+</script>
+</body>
+</html>
+
+
+
+

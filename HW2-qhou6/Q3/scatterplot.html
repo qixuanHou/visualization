@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../lib/d3.v5.min.js"></script>
+<body>
+<script>
+d3.csv('movies.csv').then(function(data) {
+
+	var body = d3.select('body')
+	var w = 1200,
+    	h = 800,
+		padding = 80;
+
+	var xScale = d3.scaleLinear()
+				   .domain([0, d3.max(data, function(d) { return d.Rating * 1.1; })])
+				   .range([padding, w-padding*2]);
+
+	var yScale = d3.scaleLinear()
+				   .domain([0, d3.max(data, function(d) { return d.WinsNoms * 1.1; })])
+				   .range([h - padding, padding*2]);
+
+	var yScale2 = d3.scaleLinear()
+				    .domain([0, d3.max(data, function(d) { return d.Budget * 1.1; })])
+				    .range([h - padding, padding*2]);
+
+	var yScale3 = d3.scaleLinear()
+				    .domain([0, d3.max(data, function(d) { return d.Votes * 1.1; })])
+				    .range([h - padding, padding*2]);
+
+	var yScale4 = d3.scaleSqrt()
+				   .domain([0, d3.max(data, function(d) { return d.WinsNoms * 1.1; })])
+				   .range([h - padding, padding*2]);
+
+	var yScale5 = d3.scaleLog()
+				   .domain([1, d3.max(data, function(d) { return d.WinsNoms * 1.1; })])
+				   .range([h - padding, padding*2]);	
+
+	var xAxis = d3.axisBottom(xScale)
+				  .ticks(20);
+
+	var yAxis = d3.axisLeft(yScale)
+				  .ticks(10);
+
+	var yAxis2 = d3.axisLeft(yScale2)
+				  .ticks(10);
+
+	var yAxis3 = d3.axisLeft(yScale3)
+				  .ticks(10);
+
+	var yAxis4 = d3.axisLeft(yScale4)
+				  .ticks(10);
+
+	var yAxis5 = d3.axisLeft(yScale5)
+				  .ticks(10);
+
+ 	var svg1 = body.append('svg')
+				   .attr("width", w)
+				   .attr("height", h);
+
+	var svg2 = body.append('svg')
+				   .attr("width", w)
+				   .attr("height", h);
+
+	var svg3 = body.append('svg')
+				   .attr("width", w)
+				   .attr("height", h);
+
+	var svg4 = body.append('svg')
+				   .attr("width", w)
+				   .attr("height", h);
+
+	var svg5 = body.append('svg')
+				   .attr("width", w)
+				   .attr("height", h);
+
+	var symbol = d3.symbol().size(30);
+	var symbolS = d3.symbol().size(50);
+	var symbolx = d3.symbol();
+
+	svg1.selectAll("plots")
+		.data(data)
+		.enter()
+		.append("path")
+	 	.attr("d", symbol.type(function(d) {
+	 		if (d.IsGoodRating == 1) return d3.symbolCross; 
+	 		else return d3.symbolCircle;
+	 	}))
+	 	.attr('stroke', function(d) {
+		 	if (d.IsGoodRating == 1) { return "blue"; } else { return "red"; }
+	 	})
+		.attr('fill', 'white')
+		.attr("transform", function(d) {
+			return "translate(" + xScale(d.Rating) + "," + yScale(d.WinsNoms) + ")";
+		});
+
+	svg2.selectAll("plots")
+		.data(data)
+		.enter()
+		.append("path")
+	 	.attr("d", symbol
+	 		.type(function(d) {
+		 		if (d.IsGoodRating == 1) return d3.symbolCross; 
+		 		else return d3.symbolCircle;
+	 		})
+	 	)
+	 	.attr('stroke', function(d) {
+		 	if (d.IsGoodRating == 1) { return "blue"; } else { return "red"; }
+	 	})
+		.attr('fill', 'white')
+		.attr("transform", function(d) {
+			return "translate(" + xScale(d.Rating) + "," + yScale2(d.Budget) + ")";
+		});
+
+	svg3.selectAll("plots")
+		.data(data)
+		.enter()
+		.append("path")
+	 	.attr("d", symbolx.type(function(d) {
+					 		if (d.IsGoodRating == 1) return d3.symbolCross; 
+					 		else return d3.symbolCircle;})
+	 					 .size(function(d) {return d.WinsNoms * 2;})
+	 	)
+	 	.attr('stroke', function(d) {
+		 	if (d.IsGoodRating == 1) { return "blue"; } else { return "red"; }
+	 	})
+		.attr('fill', 'white')
+		.attr("transform", function(d) {
+			return "translate(" + xScale(d.Rating) + "," + yScale3(d.Votes) + ")";
+		});
+
+	svg4.selectAll("plots")
+		.data(data)
+		.enter()
+		.append("path")
+	 	.attr("d", symbol.type(function(d) {
+	 		if (d.IsGoodRating == 1) return d3.symbolCross; 
+	 		else return d3.symbolCircle;
+	 	}))
+	 	.attr('stroke', function(d) {
+		 	if (d.IsGoodRating == 1) { return "blue"; } else { return "red"; }
+	 	})
+		.attr('fill', 'white')
+		.attr("transform", function(d) {
+			return "translate(" + xScale(d.Rating) + "," + yScale4(d.WinsNoms) + ")";
+		});
+
+	svg5.selectAll("plots")
+		.data(data)
+		.enter()
+		.append("path")
+	 	.attr("d", symbol.type(function(d) {
+	 		if (d.IsGoodRating == 1) return d3.symbolCross; 
+	 		else return d3.symbolCircle;
+	 	}))
+	 	.attr('stroke', function(d) {
+		 	if (d.IsGoodRating == 1) { return "blue"; } else { return "red"; }
+	 	})
+		.attr('fill', 'white')
+		.attr("transform", function(d) {
+			if (d.WinsNoms == 0) return "translate(" + xScale(d.Rating) + ",0)";
+			else return "translate(" + xScale(d.Rating) + "," + yScale5(d.WinsNoms) + ")";
+		});
+
+	svg1.append("g")
+		.attr("class", "axis")
+		.attr("transform", "translate(0," + (h - padding) + ")")
+		.call(xAxis);
+
+	svg2.append("g")
+		.attr("class", "axis")
+		.attr("transform", "translate(0," + (h - padding) + ")")
+		.call(xAxis);
+
+	svg3.append("g")
+		.attr("class", "axis")
+		.attr("transform", "translate(0," + (h - padding) + ")")
+		.call(xAxis);
+
+	svg4.append("g")
+		.attr("class", "axis")
+		.attr("transform", "translate(0," + (h - padding) + ")")
+		.call(xAxis);
+
+	svg5.append("g")
+		.attr("class", "axis")
+		.attr("transform", "translate(0," + (h - padding) + ")")
+		.call(xAxis);
+
+	svg1.append("text")             
+      	.attr("transform", "translate(" + (w-padding - 40) + " ," + (h - 40) + ")")
+      	.style("text-anchor", "middle")
+      	.text("Rating");
+
+    svg2.append("text")             
+      	.attr("transform", "translate(" + (w-padding - 40) + " ," + (h - 40) + ")")
+      	.style("text-anchor", "middle")
+      	.text("Rating");
+
+    svg3.append("text")             
+      	.attr("transform", "translate(" + (w-padding - 40) + " ," + (h - 40) + ")")
+      	.style("text-anchor", "middle")
+      	.text("Rating");
+
+    svg4.append("text")             
+      	.attr("transform", "translate(" + (w-padding - 40) + " ," + (h - 40) + ")")
+      	.style("text-anchor", "middle")
+      	.text("Rating");
+
+    svg5.append("text")             
+      	.attr("transform", "translate(" + (w-padding - 40) + " ," + (h - 40) + ")")
+      	.style("text-anchor", "middle")
+      	.text("Rating");
+
+	svg1.append("g")
+		.attr("class", "axis")
+		.attr("transform", "translate(" + padding + ",0)")
+		.call(yAxis);
+
+	svg2.append("g")
+		.attr("class", "axis")
+		.attr("transform", "translate(" + padding + ",0)")
+		.call(yAxis2);
+
+	svg3.append("g")
+		.attr("class", "axis")
+		.attr("transform", "translate(" + padding + ",0)")
+		.call(yAxis3);
+
+	svg4.append("g")
+		.attr("class", "axis")
+		.attr("transform", "translate(" + padding + ",0)")
+		.call(yAxis4);
+
+	svg5.append("g")
+		.attr("class", "axis")
+		.attr("transform", "translate(" + padding + ",0)")
+		.call(yAxis5);
+
+	svg1.append("text")  
+      	.attr("transform", "translate(" + (padding) + " ," + (padding + 50) + ")")
+      	.style("text-anchor", "middle")
+      	.text("Wins+Noms");
+
+    svg2.append("text")  
+      	.attr("transform", "translate(" + (padding) + " ," + (padding + 50) + ")")
+      	.style("text-anchor", "middle")
+      	.text("Budget");
+
+    svg3.append("text")  
+      	.attr("transform", "translate(" + (padding) + " ," + (padding + 50) + ")")
+      	.style("text-anchor", "middle")
+      	.text("Votes");
+
+    svg4.append("text")  
+      	.attr("transform", "translate(" + (padding) + " ," + (padding + 50) + ")")
+      	.style("text-anchor", "middle")
+      	.text("Wins+Noms");
+
+    svg5.append("text")  
+      	.attr("transform", "translate(" + (padding) + " ," + (padding + 50) + ")")
+      	.style("text-anchor", "middle")
+      	.text("Wins+Noms");
+
+	svg1.append("text")
+		.attr("x", w/2 - padding - 60)
+		.attr("y", padding+30)
+		.attr("text-anchor", "left")
+		.style("font-size", "25px")
+		.text("Wins+Nominations vs. Rating");
+
+	svg2.append("text")
+		.attr("x", w/2 - padding - 60)
+		.attr("y", padding+30)
+		.attr("text-anchor", "left")
+		.style("font-size", "25px")
+		.text("Budget vs. Rating");
+
+	svg3.append("text")
+		.attr("x", w/2 - padding - 60)
+		.attr("y", padding+30)
+		.attr("text-anchor", "left")
+		.style("font-size", "25px")
+		.text("Votes vs. Rating sized by Wins+Nominations");
+
+	svg4.append("text")
+		.attr("x", w/2 - padding - 60)
+		.attr("y", padding+30)
+		.attr("text-anchor", "left")
+		.style("font-size", "25px")
+		.text("Wins+Nominations (square-root-scaled) vs. Rating");
+
+	svg5.append("text")
+		.attr("x", w/2 - padding - 60)
+		.attr("y", padding+30)
+		.attr("text-anchor", "left")
+		.style("font-size", "25px")
+		.text("Wins+Nominations (log-scaled) vs. Rating");
+
+	svg1.append("path")
+	 	.attr("d", symbolS.type(d3.symbolCross))
+	 	.attr('stroke', "blue")
+		.attr('fill', 'white')
+		.attr("transform", "translate(" + (w-180) + " ," + (120) + ")");
+
+	svg2.append("path")
+	 	.attr("d", symbolS.type(d3.symbolCross))
+	 	.attr('stroke', "blue")
+		.attr('fill', 'white')
+		.attr("transform", "translate(" + (w-180) + " ," + (120) + ")");
+
+	svg3.append("path")
+	 	.attr("d", symbolS.type(d3.symbolCross))
+	 	.attr('stroke', "blue")
+		.attr('fill', 'white')
+		.attr("transform", "translate(" + (w-180) + " ," + (120) + ")");
+
+	svg4.append("path")
+	 	.attr("d", symbolS.type(d3.symbolCross))
+	 	.attr('stroke', "blue")
+		.attr('fill', 'white')
+		.attr("transform", "translate(" + (w-180) + " ," + (120) + ")");
+
+	svg5.append("path")
+	 	.attr("d", symbolS.type(d3.symbolCross))
+	 	.attr('stroke', "blue")
+		.attr('fill', 'white')
+		.attr("transform", "translate(" + (w-180) + " ," + (120) + ")");
+
+	svg1.append("text")
+		.attr("x", w - 160)
+		.attr("y", 122)
+		.attr("text-anchor", "left")
+		.style("font-size", "12px")
+		.text("Good");
+
+	svg2.append("text")
+		.attr("x", w - 160)
+		.attr("y", 122)
+		.attr("text-anchor", "left")
+		.style("font-size", "12px")
+		.text("Good");
+
+	svg3.append("text")
+		.attr("x", w - 160)
+		.attr("y", 122)
+		.attr("text-anchor", "left")
+		.style("font-size", "12px")
+		.text("Good");
+
+	svg4.append("text")
+		.attr("x", w - 160)
+		.attr("y", 122)
+		.attr("text-anchor", "left")
+		.style("font-size", "12px")
+		.text("Good");
+
+	svg5.append("text")
+		.attr("x", w - 160)
+		.attr("y", 122)
+		.attr("text-anchor", "left")
+		.style("font-size", "12px")
+		.text("Good");
+
+	svg1.append("circle")
+		.attr("cx", w-180)
+		.attr("cy", 140)
+		.attr("r", 5)
+		.attr('stroke', 'red')
+		.attr('fill', 'white');
+
+	svg2.append("circle")
+		.attr("cx", w-180)
+		.attr("cy", 140)
+		.attr("r", 5)
+		.attr('stroke', 'red')
+		.attr('fill', 'white');
+
+	svg3.append("circle")
+		.attr("cx", w-180)
+		.attr("cy", 140)
+		.attr("r", 5)
+		.attr('stroke', 'red')
+		.attr('fill', 'white');
+
+	svg4.append("circle")
+		.attr("cx", w-180)
+		.attr("cy", 140)
+		.attr("r", 5)
+		.attr('stroke', 'red')
+		.attr('fill', 'white');
+
+	svg5.append("circle")
+		.attr("cx", w-180)
+		.attr("cy", 140)
+		.attr("r", 5)
+		.attr('stroke', 'red')
+		.attr('fill', 'white');
+
+	svg1.append("text")
+		.attr("x", w - 160)
+		.attr("y", 142)
+		.attr("text-anchor", "left")
+		.style("font-size", "12px")
+		.text("Bad");
+
+	svg2.append("text")
+		.attr("x", w - 160)
+		.attr("y", 142)
+		.attr("text-anchor", "left")
+		.style("font-size", "12px")
+		.text("Bad");
+
+	svg3.append("text")
+		.attr("x", w - 160)
+		.attr("y", 142)
+		.attr("text-anchor", "left")
+		.style("font-size", "12px")
+		.text("Bad");
+
+	svg4.append("text")
+		.attr("x", w - 160)
+		.attr("y", 142)
+		.attr("text-anchor", "left")
+		.style("font-size", "12px")
+		.text("Bad");
+
+	svg5.append("text")
+		.attr("x", w - 160)
+		.attr("y", 142)
+		.attr("text-anchor", "left")
+		.style("font-size", "12px")
+		.text("Bad");
+});
+</script>
+</body>
+</html>

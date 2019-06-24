@@ -1,0 +1,13 @@
+Ease to develop for developers 
+	from hard to easy: D3 -> Tableau -> Excel 
+	D3 requires a great amount of knowledge of front-end development while Tableau and Excel is easy to learn by the general public
+Ease to maintain the visualization for developers 
+	from hard to easy: D3 -> Tableau -> Excel 
+	If product requirement or data get changed, work is required with all three type of visualization tools. However, Tableau and Excel won't be affected a lot by the platform change. 
+Usability of visualization developed for end users
+	Tableau and Excel typically produce a graph and give users limited amount of interactions. However, D3 can be used to produce really user-friendly visualization with good design.
+Scalability of visualization to “large” datasets
+	from bad to good: Excel -> Tableau -> D3
+	Excel will be really slow when data set is large. Tableau provides developers different platforms to host data, which can be fast to deal with large data set. D3 is the most flexible tool and developers can easily host large datasets.
+System requirements to run the visualization for end users
+	visualizations developed by all the three tools can be eaily accessible by end users. 
